@@ -7,7 +7,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>Alla — uyqu</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="manifest" href="manifest.webmanifest">
+<script>/* Old Android (<10) WebAPK shells can crash on launch: there we skip the manifest, so Chrome offers a plain, crash-proof home-screen shortcut instead. */
+(async()=>{let ok=false;try{const d=navigator.userAgentData;if(d&&d.getHighEntropyValues){const v=await d.getHighEntropyValues(['platformVersion']);ok=d.platform!=='Android'||parseInt(v.platformVersion||'0',10)>=10}else{ok=!/Android/i.test(navigator.userAgent)}}catch(e){ok=false}
+if(ok){const l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l)}})();</script>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 /* VOICE: tender, hushed, one hand at night
