@@ -23,7 +23,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(13,16,48,.92);backdrop-filter:blur(8px)}
 header h1{font-size:20px;margin:0;flex:1;letter-spacing:.2px}
 header h1 b{color:var(--moon)}
-.langs{display:flex;background:var(--bg2);border-radius:20px;padding:3px}
+.lsel{appearance:none;-webkit-appearance:none;background:var(--bg2);color:var(--moon);border:1px solid var(--line);border-radius:20px;padding:8px 14px;font:600 14px system-ui,sans-serif;min-height:40px;max-width:46vw;padding-inline-end:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23f3d27a' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-size:11px;background-position:right 12px center}
+[dir=rtl] .lsel{background-position:left 12px center}
 .langs button{padding:6px 10px;border-radius:16px;font-size:13px;color:var(--mute);min-height:34px}
 .langs button.on{background:var(--moon);color:#1a1530;font-weight:700}
 .ib{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--bg2)}
@@ -106,7 +107,7 @@ body.locked #guard{display:block}
 <body>
 <header>
   <h1><b>Alla</b> <span id="hname"></span></h1>
-  <div class="langs" id="langs"><button data-l="uz">UZ</button><button data-l="ru">RU</button><button data-l="en">EN</button></div>
+  <select id="lsel" class="lsel" aria-label="Language"></select>
   <button class="ib" id="lockbtn" aria-label="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
 </header>
 
@@ -174,7 +175,9 @@ body.locked #guard{display:block}
 {
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const store={get(k,d){try{const v=localStorage.getItem('alla_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('alla_'+k,JSON.stringify(v))}catch(e){}}};
-const autoL=()=>{try{for(const x of (navigator.languages||[navigator.language])){const l=(x||'').toLowerCase();if(l.startsWith('uz')||l.endsWith('-uz'))return 'uz';if(l.startsWith('ru')||/^(kk|ky|tg|be|uk)/.test(l))return 'ru';if(l.startsWith('en'))return 'en'}}catch(e){}return 'en'};
+const LANGS=[['uz',"O'zbek"],['ru','Русский'],['en','English'],['zh','中文'],['es','Español'],['ar','العربية'],['hi','हिन्दी'],['pt','Português'],['fr','Français'],['de','Deutsch'],['ja','日本語'],['ko','한국어'],['tr','Türkçe'],['id','Bahasa Indonesia'],['sw','Kiswahili']];
+const CODES=LANGS.map(x=>x[0]);
+const autoL=()=>{try{for(const x of (navigator.languages||[navigator.language])){const b=(x||'').toLowerCase().split('-')[0];if(CODES.includes(b))return b;if(['kk','ky','tg','be','uk'].includes(b))return 'ru';if(b==='in')return 'id'}}catch(e){}return 'en'};
 let L=store.get('lang',autoL());
 let N=store.get('names',{c:'',m:'',d:''});
 
@@ -337,7 +340,7 @@ $('#pqx').onclick=()=>$('#pq').classList.remove('on');
 let speaking=null;
 function voiceFor(l){const vs=speechSynthesis.getVoices();return vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith(l))}
 function speak(text,btn){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();if(speaking===btn){speaking=null;btn.textContent=T[L].read;return}
-const v=voiceFor(L);if(!v&&L==='uz'){btn.nextElementSibling.textContent=T[L].noVoice;return}
+const v=voiceFor(L);if(!v&&L!=='en'){btn.nextElementSibling.textContent=T[L].noVoice;return}
 document.querySelectorAll('.rd').forEach(b=>b.textContent=T[L].read);speaking=btn;btn.textContent=T[L].stopR;
 const parts=text.split(/\n+/).filter(Boolean);parts.forEach((p,i)=>{const u=new SpeechSynthesisUtterance(p.replace(/…/g,', '));if(v)u.voice=v;u.lang=v?v.lang:L;u.rate=.78;u.pitch=.95;u.volume=1;if(i===parts.length-1)u.onend=()=>{if(speaking===btn){speaking=null;btn.textContent=T[L].read}};speechSynthesis.speak(u)})}
 try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
@@ -357,10 +360,15 @@ $('#gre').onclick=newGame;
 /* ---------- names ---------- */
 $('#save').onclick=()=>{N={c:$('#nc').value.trim(),m:$('#nm').value.trim(),d:$('#nd').value.trim()};store.set('names',N);$('#saved').textContent=T[L].saved;setTimeout(()=>$('#saved').textContent='',2000);render()};
 
+/* ---------- lazy language packs ---------- */
+const tpl=b=>({c,m,d})=>b.replace(/\{c\}/g,c).replace(/\{m\}/g,m).replace(/\{d\}/g,d);
+function reg(l,j){const t=j.T;T[l]=Object.assign({},t,{greet:n=>t.greet.replace('{n}',n),allSleep:n=>t.allSleep.replace('{n}',n)});H[l]={nowB:j.nowB};TIPS[l]=j.tips;j.st.forEach((x,i)=>{ST[i].t[l]=x.t;ST[i].b[l]=tpl(x.b)});j.po.forEach((x,i)=>{PO[i].t[l]=x.t;PO[i].b[l]=tpl(x.b)})}
+async function useLang(l){if(!CODES.includes(l))l='en';if(!T[l]){try{const r=await fetch('lang/'+l+'.json');reg(l,await r.json())}catch(e){l=T[L]?L:'en'}}L=l;store.set('lang',L);try{speechSynthesis.cancel()}catch(x){}speaking=null;render()}
+$('#lsel').innerHTML=LANGS.map(([c,n])=>`<option value="${c}">${n}</option>`).join('');
+$('#lsel').addEventListener('change',e=>useLang(e.target.value));
 /* ---------- tabs + lang ---------- */
 $('#nav').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;$$('#nav button').forEach(x=>x.classList.toggle('on',x===b));$$('.tab').forEach(t=>t.classList.toggle('on',t.id==='t-'+b.dataset.t));if(b.dataset.t==='game'&&!$$('.st').length)newGame();window.scrollTo(0,0);store.set('tab',b.dataset.t)});
-$('#langs').addEventListener('click',e=>{const b=e.target.closest('[data-l]');if(!b)return;L=b.dataset.l;store.set('lang',L);try{speechSynthesis.cancel()}catch(x){}speaking=null;render()});
-function render(){document.documentElement.lang=L;$$('#langs button').forEach(b=>b.classList.toggle('on',b.dataset.l===L));
+function render(){document.documentElement.lang=L;document.documentElement.dir=L==='ar'?'rtl':'ltr';$('#lsel').value=L;
 $$('[data-i]').forEach(el=>{const v=T[L][el.dataset.i];if(typeof v==='string')el.textContent=v});
 $$('[data-h]').forEach(el=>el.innerHTML=H[L][el.dataset.h]);
 const n=nm();$('#greet').textContent=T[L].greet(n.c);$('#hname').textContent=N.c?'· '+N.c:'';
@@ -368,7 +376,7 @@ $('#stl').innerHTML=storyHTML(ST,'s');$('#pol').innerHTML=storyHTML(PO,'p');
 $('#tips').innerHTML=TIPS[L].map(([t,b])=>`<div class="acc"><button><span class="dot" style="background:#7ee0b5"></span><span>${t}</span><i>›</i></button><div class="bd">${b}</div></div>`).join('');
 $('#nc').value=N.c;$('#nm').value=N.m;$('#nd').value=N.d;renderSnd();renderTimers();
 if($('#gmsg').textContent)$('#gmsg').textContent=T[L].allSleep(n.c)}
-render();
+{const want=L;if(!T[want]){L='en';render();useLang(want)}else render()}
 const t0=store.get('tab','home');if(t0!=='home'){const b=$(`#nav [data-t="${t0}"]`);b&&b.click()}
 if(!N.c){const pb=$('#nav [data-t="par"]');}
 }
