@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0d1030">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Alla — uyqu</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+/* VOICE: tender, hushed, one hand at night
+   IDEA: a moonlit nursery window — the phone becomes a night light
+   PICTURE: a big glowing moon button that breathes 4s in / 6s out
+   COLOUR and TYPE: deep indigo night, moon gold, warm amber; system sans, large and soft
+   LAYOUT: one column, bottom tabs like Chrome, every section closed until tapped */
+:root{color-scheme:dark;--bg:#0d1030;--bg2:#161a44;--card:#1b2052;--ink:#eef0ff;--mute:#a9addb;--moon:#f3d27a;--amber:#ff9d4d;--line:#2a3070}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(120% 70% at 50% 0%,#1d2360 0%,var(--bg) 60%);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:clip;user-select:none;-webkit-user-select:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(13,16,48,.92);backdrop-filter:blur(8px)}
+header h1{font-size:20px;margin:0;flex:1;letter-spacing:.2px}
+header h1 b{color:var(--moon)}
+.langs{display:flex;background:var(--bg2);border-radius:20px;padding:3px}
+.langs button{padding:6px 10px;border-radius:16px;font-size:13px;color:var(--mute);min-height:34px}
+.langs button.on{background:var(--moon);color:#1a1530;font-weight:700}
+.ib{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--bg2)}
+.ib svg{width:22px;height:22px}
+main{padding:8px 14px 96px;max-width:640px;margin:0 auto}
+.tab{display:none}.tab.on{display:block;animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(13,16,48,.96);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 10px;font-size:11.5px;color:var(--mute)}
+nav button svg{width:24px;height:24px}
+nav button.on{color:var(--moon)}
+.hero{display:grid;place-items:center;padding:18px 0 6px}
+.moonbtn{width:min(68vw,260px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 38% 35%,#fff6d6,var(--moon) 45%,#c79a3c);box-shadow:0 0 60px 10px rgba(243,210,122,.35),inset -18px -18px 40px rgba(120,80,20,.35);color:#2a1d05;font-weight:800;font-size:clamp(22px,6vw,28px);display:grid;place-items:center;text-align:center;line-height:1.15;animation:breathe 10s ease-in-out infinite}
+.moonbtn small{display:block;font-size:13px;font-weight:600;opacity:.75;margin-top:6px}
+@keyframes breathe{0%,100%{transform:scale(.94)}40%{transform:scale(1.03)}}
+.hint{text-align:center;color:var(--mute);font-size:14px;margin:14px 8px 4px}
+.hi{font-size:22px;text-align:center;margin:6px 0 0}
+.acc{background:var(--card);border-radius:18px;margin:10px 0;overflow:hidden;border:1px solid var(--line)}
+.acc>button{width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;text-align:start;min-height:56px;font-weight:650}
+.acc>button i{font-style:normal;margin-inline-start:auto;transition:transform .2s;color:var(--mute)}
+.acc.open>button i{transform:rotate(90deg)}
+.acc .bd{display:none;padding:0 16px 16px;color:#dfe2ff;font-size:16px;line-height:1.65;user-select:text;-webkit-user-select:text}
+.acc.open .bd{display:block}
+.bd p{margin:0 0 10px}.bd ol,.bd ul{margin:0;padding-inline-start:20px}.bd li{margin:4px 0}
+.dot{width:12px;height:12px;border-radius:50%;flex:none}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;min-height:92px;display:flex;flex-direction:column;justify-content:space-between;text-align:start}
+.tile svg{width:30px;height:30px;color:var(--moon)}
+.tile.on{background:linear-gradient(150deg,#3a3480,#232866);border-color:var(--moon);box-shadow:0 0 0 2px rgba(243,210,122,.25)}
+.tile.on span::after{content:" ●";color:var(--moon);font-size:12px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}
+.chip{padding:8px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--line);min-height:40px;font-size:14px}
+.chip.on{background:var(--moon);color:#1a1530;border-color:var(--moon);font-weight:700}
+input[type=range]{flex:1;accent-color:var(--moon);height:36px}
+label.f{display:block;margin:10px 0 4px;color:var(--mute);font-size:14px}
+input[type=text],input[type=number]{width:100%;font-size:17px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--bg2);color:var(--ink);user-select:text}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:16px;background:var(--moon);color:#1a1530;font-weight:700;min-height:48px}
+.btn.g{background:var(--bg2);color:var(--ink);border:1px solid var(--line)}
+.story{font-size:19px;line-height:1.75}
+.note{font-size:13px;color:var(--mute)}
+.sec{font-size:13px;color:var(--mute);margin:18px 4px 4px}
+/* night light */
+#nl{position:fixed;inset:0;z-index:20;display:none;background:#000;touch-action:none}
+#nl.on{display:block}
+#nlc{position:absolute;inset:0;transition:background 2s,opacity 2s}
+#orb{position:absolute;left:50%;top:42%;width:46vmin;height:46vmin;margin:-23vmin 0 0 -23vmin;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.55),rgba(255,255,255,0) 70%);animation:orb 10s ease-in-out infinite}
+@keyframes orb{0%,100%{transform:scale(.7);opacity:.35}40%{transform:scale(1.1);opacity:.8}}
+#nlui{position:absolute;left:0;right:0;bottom:0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;background:linear-gradient(transparent,rgba(0,0,0,.7));transition:opacity .4s}
+#nlui.hide{opacity:0;pointer-events:none}
+#nlui .row{margin:0;justify-content:center}
+.sw{width:42px;height:42px;border-radius:50%;border:2px solid rgba(255,255,255,.25)}
+.sw.on{border-color:#fff}
+#tmr{position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;color:rgba(255,255,255,.45);font-size:14px}
+#bnote{position:absolute;top:58%;left:0;right:0;text-align:center;color:rgba(255,255,255,.4);font-size:15px}
+/* child lock */
+#lockhold{position:fixed;top:calc(8px + env(safe-area-inset-top));right:8px;z-index:40;width:52px;height:52px;border-radius:50%;display:none;place-items:center;background:rgba(255,255,255,.06)}
+body.locked #lockhold{display:grid}
+#lockhold svg.r{position:absolute;inset:0;width:52px;height:52px;transform:rotate(-90deg)}
+#lockhold svg.k{width:20px;height:20px;opacity:.35}
+body.locked header,body.locked nav,body.locked #nlui{display:none!important}
+.glow{position:fixed;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;pointer-events:none;z-index:30;background:radial-gradient(circle,rgba(255,220,150,.55),transparent 70%);animation:gl 1.6s ease-out forwards}
+@keyframes gl{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
+#guard{position:fixed;inset:0;z-index:25;display:none}
+body.locked #guard{display:block}
+#pq{position:fixed;inset:0;z-index:50;display:none;place-items:center;background:rgba(5,6,20,.92)}
+#pq.on{display:grid}
+#pq .box{background:var(--card);border-radius:22px;padding:22px;width:min(90vw,340px);text-align:center}
+#pq .opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+/* game */
+#sky{position:relative;height:62vh;min-height:360px;border-radius:24px;overflow:hidden;background:linear-gradient(#0a0c26,#1b2160 70%,#2b2f6e);border:1px solid var(--line);touch-action:manipulation}
+.st{position:absolute;width:56px;height:56px;margin:-28px;display:grid;place-items:center;transition:opacity 1.2s,transform 1.2s}
+.st svg{width:40px;height:40px;filter:drop-shadow(0 0 8px #ffe9a8);animation:tw 2.4s ease-in-out infinite}
+.st.sl{opacity:.18;transform:scale(.6)}.st.sl svg{animation:none;filter:none}
+@keyframes tw{50%{transform:scale(.85)}}
+#gm{position:absolute;right:18px;top:16px;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff6d6,var(--moon));box-shadow:0 0 40px rgba(243,210,122,.5)}
+#gmsg{position:absolute;left:0;right:0;bottom:22px;text-align:center;font-size:20px;padding:0 16px}
+@media (prefers-reduced-motion:reduce){.moonbtn,#orb,.st svg{animation:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1><b>Alla</b> <span id="hname"></span></h1>
+  <div class="langs" id="langs"><button data-l="uz">UZ</button><button data-l="ru">RU</button><button data-l="en">EN</button></div>
+  <button class="ib" id="lockbtn" aria-label="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
+</header>
+
+<main>
+  <section class="tab on" id="t-home">
+    <p class="hi" id="greet"></p>
+    <div class="hero"><button class="moonbtn" id="go"><span><span data-i="go"></span><small data-i="goSub"></small></span></button></div>
+    <p class="hint" data-i="goHint"></p>
+    <div class="acc" id="now"><button><span class="dot" style="background:var(--amber)"></span><span data-i="nowT"></span><i>›</i></button><div class="bd" data-h="nowB"></div></div>
+  </section>
+
+  <section class="tab" id="t-snd">
+    <div class="grid" id="snds"></div>
+    <div class="row"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9z"/></svg><input type="range" id="vol" min="0" max="100" value="55"></div>
+    <div class="sec" data-i="timer"></div>
+    <div class="row" id="timers"></div>
+    <div class="row"><button class="btn" id="nlopen" data-i="openNL"></button><button class="btn g" id="stopall" data-i="stop"></button></div>
+  </section>
+
+  <section class="tab" id="t-str">
+    <div class="sec" data-i="stories"></div>
+    <div id="stl"></div>
+    <div class="sec" data-i="poems"></div>
+    <div id="pol"></div>
+    <p class="note" data-i="ttsNote"></p>
+  </section>
+
+  <section class="tab" id="t-game">
+    <div id="sky"><div id="gm"></div><div id="gmsg"></div></div>
+    <p class="hint" data-i="gameHint"></p>
+    <div class="row" style="justify-content:center"><button class="btn g" id="gre" data-i="again"></button></div>
+  </section>
+
+  <section class="tab" id="t-par">
+    <div class="acc open"><button><span class="dot" style="background:var(--moon)"></span><span data-i="names"></span><i>›</i></button><div class="bd">
+      <label class="f" data-i="nChild"></label><input type="text" id="nc" maxlength="20" autocomplete="off">
+      <label class="f" data-i="nMom"></label><input type="text" id="nm" maxlength="20" autocomplete="off">
+      <label class="f" data-i="nDad"></label><input type="text" id="nd" maxlength="20" autocomplete="off">
+      <div class="row"><button class="btn" id="save" data-i="save"></button><span class="note" id="saved"></span></div>
+    </div></div>
+    <div id="tips"></div>
+  </section>
+</main>
+
+<nav id="nav">
+  <button data-t="home" class="on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 3a9 9 0 1 0 6 13A8 8 0 0 1 15 3z"/></svg><span data-i="tHome"></span></button>
+  <button data-t="snd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 7v10"/></svg><span data-i="tSnd"></span></button>
+  <button data-t="str"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 5c3-1 6-1 9 1 3-2 6-2 9-1v14c-3-1-6-1-9 1-3-2-6-2-9-1z"/><path d="M12 6v14"/></svg><span data-i="tStr"></span></button>
+  <button data-t="game"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg><span data-i="tGame"></span></button>
+  <button data-t="par"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 2 6 5.5"/></svg><span data-i="tPar"></span></button>
+</nav>
+
+<div id="nl"><div id="nlc"></div><div id="orb"></div><div id="tmr"></div><div id="bnote" data-i="breath"></div>
+  <div id="nlui">
+    <div class="row" id="sws"></div>
+    <div class="row"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" opacity=".6"><circle cx="12" cy="12" r="5"/></svg><input type="range" id="bri" min="2" max="100" value="35"></div>
+    <div class="row"><button class="btn" id="nllock" data-i="lockNow"></button><button class="btn g" id="nlx" data-i="close"></button></div>
+  </div>
+</div>
+<div id="guard"></div>
+<button id="lockhold" aria-label="unlock"><svg class="r" viewBox="0 0 52 52"><circle id="ring" cx="26" cy="26" r="23" fill="none" stroke="#f3d27a" stroke-width="3" stroke-dasharray="144.5" stroke-dashoffset="144.5"/></svg><svg class="k" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
+<div id="pq"><div class="box"><p data-i="pqT"></p><p style="font-size:30px;font-weight:800;margin:6px 0" id="pqq"></p><div class="opts" id="pqo"></div><button class="btn g" style="margin-top:14px" id="pqx" data-i="cancel"></button></div></div>
+
+<script>
+{
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem('alla_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('alla_'+k,JSON.stringify(v))}catch(e){}}};
+let L=store.get('lang','uz');
+let N=store.get('names',{c:'',m:'',d:''});
+
+const T={
+uz:{tHome:'Uyqu',tSnd:'Ovozlar',tStr:'Ertaklar',tGame:"O'yin",tPar:'Ota-ona',go:'Uxlatish',goSub:'bir bosish',goHint:"Qizil tungi chiroq + mayin shovqin + alla. 30 daqiqadan keyin o'zi sekin o'chadi.",
+nowT:'Hozir uxlamayapti? 5 qadam',greet:n=>`Xayrli tun, ${n}`,timer:"Taymer (o'zi o'chadi)",off:"O'chiq",min:'daq',openNL:'Tungi chiroq',stop:"Hammasini o'chirish",stories:'Ertaklar',poems:"Allalar va she'rlar",read:"O'qib berish",stopR:"To'xtatish",
+ttsNote:"Eng yaxshisi — onaning ovozi. Telefonda o'zbek ovozi bo'lmasa, matnni ona o'qib bersin.",gameHint:"Har bir yulduzchaga tegib, uni uxlat. Hammasi uxlasa — Oy xayrli tun deydi.",again:'Yana',
+names:'Ismlar',nChild:'Qizimizning ismi',nMom:'Onasining ismi',nDad:'Dadasining ismi',save:'Saqlash',saved:'Saqlandi ✓',breath:'Nafas ol… sekin chiqar…',lockNow:'Bolalar qulfi',close:'Yopish',
+pqT:"Qulfni ochish (kattalar uchun):",cancel:'Bekor',allSleep:n=>`Hamma yulduzlar uxladi. Endi navbat ${n}da. Xayrli tun!`,noVoice:"Bu telefonda o'zbek ovozi yo'q — onasi o'qib bersin.",
+dc:'qizim',dm:'oyisi',dd:'dadasi',
+s:{rain:"Yomg'ir",ocean:'Dengiz',heart:'Yurak urishi',shh:'Shshsh',white:'Oq shovqin',brown:'Shamol / fen',brahms:'Alla (Brams)',twinkle:'Yulduzcha'}},
+ru:{tHome:'Сон',tSnd:'Звуки',tStr:'Сказки',tGame:'Игра',tPar:'Родителям',go:'Уложить',goSub:'одно нажатие',goHint:'Красный ночник + мягкий шум + колыбельная. Через 30 минут всё плавно выключится само.',
+nowT:'Не спит прямо сейчас? 5 шагов',greet:n=>`Спокойной ночи, ${n}`,timer:'Таймер (выключится сам)',off:'Выкл',min:'мин',openNL:'Ночник',stop:'Выключить всё',stories:'Сказки',poems:'Колыбельные и стихи',read:'Прочитать вслух',stopR:'Стоп',
+ttsNote:'Лучше всего — мамин голос. Если голос робота звучит плохо, пусть мама читает текст сама.',gameHint:'Коснись каждой звёздочки — она засыпает. Когда уснут все, Луна скажет «спокойной ночи».',again:'Ещё раз',
+names:'Имена',nChild:'Имя дочки',nMom:'Имя мамы',nDad:'Имя папы',save:'Сохранить',saved:'Сохранено ✓',breath:'Вдох… медленный выдох…',lockNow:'Детский замок',close:'Закрыть',
+pqT:'Снять замок (для взрослых):',cancel:'Отмена',allSleep:n=>`Все звёздочки уснули. Теперь очередь ${n}. Спокойной ночи!`,noVoice:'На этом телефоне нет узбекского голоса — пусть прочитает мама.',
+dc:'доченька',dm:'мама',dd:'папа',
+s:{rain:'Дождь',ocean:'Море',heart:'Сердцебиение',shh:'Шшш',white:'Белый шум',brown:'Ветер / фен',brahms:'Колыбельная Брамса',twinkle:'Звёздочка'}},
+en:{tHome:'Sleep',tSnd:'Sounds',tStr:'Stories',tGame:'Game',tPar:'Parents',go:'Sleep now',goSub:'one tap',goHint:'Red night light + soft noise + lullaby. Fades out by itself after 30 minutes.',
+nowT:'Not sleeping right now? 5 steps',greet:n=>`Good night, ${n}`,timer:'Sleep timer',off:'Off',min:'min',openNL:'Night light',stop:'Stop all',stories:'Stories',poems:'Lullabies & poems',read:'Read aloud',stopR:'Stop',
+ttsNote:"Mom's own voice works best. If the robot voice sounds wrong, read the text yourself.",gameHint:'Touch each star to put it to sleep. When all are asleep, the Moon says good night.',again:'Again',
+names:'Names',nChild:"Daughter's name",nMom:"Mom's name",nDad:"Dad's name",save:'Save',saved:'Saved ✓',breath:'Breathe in… slowly out…',lockNow:'Child lock',close:'Close',
+pqT:'Unlock (grown-ups):',cancel:'Cancel',allSleep:n=>`All the stars are asleep. Now it's ${n}'s turn. Good night!`,noVoice:'No Uzbek voice on this phone — Mom, please read it.',
+dc:'sweetie',dm:'Mommy',dd:'Daddy',
+s:{rain:'Rain',ocean:'Ocean',heart:'Heartbeat',shh:'Shhh',white:'White noise',brown:'Wind / fan',brahms:"Brahms' Lullaby",twinkle:'Twinkle star'}}
+};
+const H={
+uz:{nowB:`<ol><li><b>Chiroqlarni o'chiring.</b> Faqat shu ilovaning qizil tungi chirog'i (qizil yorug'lik uyqu gormoniga eng kam xalaqit beradi).</li><li><b>O'yin yo'q, gap kam.</b> Past, zerikarli, bir xil ovoz bilan gapiring.</li><li><b>Yoniga yoting va sekin, eshitiladigan qilib nafas oling</b> (4 soniya olish, 6 soniya chiqarish). Bola ritmga moslashadi.</li><li><b>"Uyquchi tana" ertagini</b> o'qing — oyoqdan boshgacha bo'shashtiradi.</li><li><b>Shovqin yoqing</b> (shamol yoki yurak urishi), taymer 30 daqiqa.</li></ol><p>20–30 daqiqada uxlamasa — urishmang. Xira yorug'da tinch narsa (kitob varaqlash), keyin yana urinib ko'ring.</p>`},
+ru:{nowB:`<ol><li><b>Выключите весь свет.</b> Только красный ночник этого приложения (красный свет меньше всего мешает гормону сна).</li><li><b>Никаких игр, минимум слов.</b> Говорите тихо, монотонно, скучно.</li><li><b>Лягте рядом и дышите медленно и слышно</b> (вдох 4 с, выдох 6 с). Ребёнок подстраивается под ритм.</li><li><b>Прочитайте сказку «Сонное тело»</b> — расслабление от пальчиков до макушки.</li><li><b>Включите шум</b> (ветер или сердцебиение), таймер 30 минут.</li></ol><p>Не уснула за 20–30 минут — не боритесь. Тихое занятие при тусклом свете (листать книжку), потом снова в кровать.</p>`},
+en:{nowB:`<ol><li><b>Turn off every light.</b> Use only this app's red night light (red light disturbs the sleep hormone least).</li><li><b>No play, few words.</b> Speak low, slow and boring.</li><li><b>Lie beside her and breathe slowly and audibly</b> (in 4 s, out 6 s). Kids sync to your rhythm.</li><li><b>Read the "Sleepy body" story</b> — relaxes her from toes to head.</li><li><b>Turn on noise</b> (wind or heartbeat), timer 30 minutes.</li></ol><p>Still awake after 20–30 minutes? Don't fight it. A quiet activity in dim light (looking at a book), then try again.</p>`}
+};
+const TIPS={
+uz:[['Ertadan boshlab: 30 daqiqalik marosim',`<ol><li>Har kuni bir xil tartib: cho'milish → pijama → tish → 1–2 kitob → alla → chiroq o'chadi.</li><li>Yotish vaqti har kuni bir xil (±30 daqiqa), dam olish kunlari ham.</li><li>Uxlashdan 1 soat oldin telefon/televizor yo'q (bu ilovada ekran qizil va xira — faqat ovoz uchun ishlating).</li><li>Ertalab quyosh nuri va kunduzi yugurish-o'yin — kechqurun tezroq uxlaydi.</li><li>Kunduzgi uyqu: 3 yoshda bitta, 1–1,5 soat, soat 15:00 gacha tugasin.</li></ol>`],
+['Necha soat uxlashi kerak?',`<p>3 yoshda sutkasiga <b>10–13 soat</b>, kunduzgi uyqu bilan birga (Amerika Uyqu Tibbiyoti Akademiyasi tavsiyasi). Masalan: 21:00–07:30 + kunduzi 1 soat.</p>`],
+['Xona',`<ul><li>Qorong'i (qalin parda), salqin 18–20°C, tinch.</li><li>Bir xil shovqin (shamol, yomg'ir) ko'cha tovushlarini yopadi.</li><li>Sevimli yumshoq o'yinchoq — xavfsizlik hissi.</li></ul>`],
+["Karavotdan chiqib kelaversa",`<ul><li><b>Indamay qaytarish:</b> xotirjam, so'zsiz, har safar karavotga qaytaring. 2–3 kunda ishlaydi.</li><li><b>"Uyqu chiptasi":</b> qog'oz chipta bering — bir marta chiqib kelish (suv, quchoq) mumkin, keyin chipta topshiriladi. Ilmiy tadqiqotda samarasi isbotlangan.</li><li>Agar 30 daqiqadan ko'p uxlolmay yotsa — 3–4 kun yotish vaqtini 15 daqiqa kechroq qiling, keyin asta-sekin oldinga suring.</li></ul>`],
+["Bolalar qulfi — Android",`<ol><li>Ilovada qulf tugmasini bosing — ekran faqat tungi chiroq bo'ladi, chiqish uchun yuqori o'ng burchakni <b>3 soniya bosib turing</b> va misolni yeching.</li><li>Uy tugmasini ham bloklash uchun: <b>Sozlamalar → Xavfsizlik → Ilovani mahkamlash (App pinning)</b> ni yoqing. Keyin "So'nggi ilovalar" → brauzer belgisi → <b>Mahkamlash</b>. Chiqish: Orqaga + Oxirgi ilovalar tugmalarini birga bosib turing (yoki PIN).</li></ol>`],
+["Shifokorga qachon",`<p>Qattiq xurrak, uyquda nafas to'xtashi, har kecha qo'rqib uyg'onish yoki kunduzi juda charchoq bo'lsa — pediatrga ko'rsating.</p>`]],
+ru:[['С завтрашнего дня: ритуал 30 минут',`<ol><li>Каждый вечер одинаково: купание → пижама → зубы → 1–2 книжки → колыбельная → свет выключен.</li><li>Время отхода ко сну одно и то же (±30 минут), в выходные тоже.</li><li>За 1 час до сна — никаких экранов (здесь экран красный и тусклый — используйте приложение для звука).</li><li>Утром — дневной свет, днём — подвижные игры: вечером засыпает быстрее.</li><li>Дневной сон в 3 года — один, 1–1,5 часа, закончить до 15:00.</li></ol>`],
+['Сколько нужно спать?',`<p>В 3 года — <b>10–13 часов в сутки</b> вместе с дневным сном (рекомендация Американской академии медицины сна). Например: 21:00–07:30 + час днём.</p>`],
+['Комната',`<ul><li>Темно (плотные шторы), прохладно 18–20°C, тихо.</li><li>Ровный шум (ветер, дождь) заглушает звуки улицы.</li><li>Любимая мягкая игрушка — чувство безопасности.</li></ul>`],
+['Если вылезает из кровати',`<ul><li><b>Молчаливое возвращение:</b> спокойно, без слов, каждый раз обратно в кровать. Работает за 2–3 вечера.</li><li><b>«Билет на сон»:</b> бумажный билетик — один выход (попить, обнять), потом билет сдаётся. Эффективность подтверждена исследованиями.</li><li>Если лежит без сна дольше 30 минут — на 3–4 дня сдвиньте отбой на 15 минут позже, потом постепенно возвращайте раньше.</li></ul>`],
+['Детский замок — Android',`<ol><li>Нажмите замок в приложении — останется только ночник. Выход: <b>удерживать правый верхний угол 3 секунды</b> и решить пример.</li><li>Чтобы заблокировать и кнопку «Домой»: <b>Настройки → Безопасность → Закрепление приложений</b> (App pinning). Затем «Недавние приложения» → значок браузера → <b>Закрепить</b>. Выход: зажать «Назад» + «Недавние» (или PIN).</li></ol>`],
+['Когда к врачу',`<p>Громкий храп, остановки дыхания во сне, ночные ужасы каждую ночь, сильная дневная усталость — покажите педиатру.</p>`]],
+en:[['From tomorrow: a 30-minute routine',`<ol><li>Same order every night: bath → pajamas → teeth → 1–2 books → lullaby → lights out.</li><li>Same bedtime every day (±30 min), weekends too.</li><li>No screens 1 hour before bed (this app's screen is red and dim — use it for sound).</li><li>Morning daylight and active daytime play make evenings easier.</li><li>Nap at age 3: one, 1–1.5 h, finished by 3 pm.</li></ol>`],
+['How much sleep?',`<p>At age 3: <b>10–13 hours per 24 h</b>, nap included (American Academy of Sleep Medicine). E.g. 9:00 pm–7:30 am + 1 h nap.</p>`],
+['The room',`<ul><li>Dark (blackout curtains), cool 18–20°C, quiet.</li><li>Steady noise (wind, rain) masks street sounds.</li><li>A favourite soft toy for security.</li></ul>`],
+['If she keeps getting up',`<ul><li><b>Silent return:</b> calmly walk her back, no words, every time. Works within 2–3 nights.</li><li><b>Bedtime pass:</b> a paper ticket good for one exit (water, hug), then she hands it in. Shown effective in research.</li><li>Awake in bed over 30 min? Move bedtime 15 min later for 3–4 nights, then gradually earlier.</li></ul>`],
+['Child lock — Android',`<ol><li>Tap the lock in the app — only the night light remains. To exit: <b>hold the top-right corner 3 seconds</b> and solve the sum.</li><li>To also block Home: <b>Settings → Security → App pinning</b>. Then Recent apps → browser icon → <b>Pin</b>. Exit: hold Back + Recents (or PIN).</li></ol>`],
+['When to see a doctor',`<p>Loud snoring, pauses in breathing, nightly night terrors or strong daytime tiredness — see a pediatrician.</p>`]]
+};
+
+const nm=()=>({c:N.c||T[L].dc,m:N.m||T[L].dm,d:N.d||T[L].dd});
+const ST=[
+{t:{uz:'Uyquchi tana',ru:'Сонное тело',en:'Sleepy body'},b:{
+uz:({c,m,d})=>`${c}, ko'zlaringni yum. Biz hozir tanangni uxlatamiz.\nOyoq barmoqlaring charchadi… ular og'ir… ular uxlayapti.\nTovonlaring iliq… yumshoq… uxlayapti.\nTizzalaring bo'shashdi… uxlayapti.\nQorinchang sekin ko'tariladi… sekin tushadi… xuddi dengiz to'lqini.\nQo'lchalaring og'ir… barmoqlaring uxlayapti.\nYelkalaring yumshoq… bo'yning yumshoq.\nYuzing tinch… qoshlaring tinch… ko'zlaring og'ir.\n${m} yoningda. ${d} yoningda. Hammasi yaxshi.\nNafas ol… sekin chiqar… Butun tanang uxlayapti.\nXayrli tun, ${c}.`,
+ru:({c,m,d})=>`${c}, закрой глазки. Сейчас мы уложим спать всё твоё тело.\nПальчики на ножках устали… они тяжёлые… они засыпают.\nПяточки тёплые… мягкие… спят.\nКоленки расслабились… спят.\nЖивотик поднимается… опускается… как морская волна.\nРучки тяжёлые… пальчики спят.\nПлечики мягкие… шейка мягкая.\nЛичико спокойное… бровки спокойные… глазки тяжёлые.\nМама ${m} рядом. Папа ${d} рядом. Всё хорошо.\nВдох… медленный выдох… Всё тело спит.\nСпокойной ночи, ${c}.`,
+en:({c,m,d})=>`${c}, close your eyes. Now we'll put your whole body to sleep.\nYour toes are tired… heavy… falling asleep.\nYour heels are warm… soft… asleep.\nYour knees are loose… asleep.\nYour tummy goes up… and down… like a slow ocean wave.\nYour arms are heavy… your fingers are asleep.\nYour shoulders are soft… your neck is soft.\nYour face is calm… your eyes are heavy.\n${m} is here. ${d} is here. Everything is okay.\nBreathe in… slowly out… Your whole body is asleep.\nGood night, ${c}.`}},
+{t:{uz:"Oy mehmonga keldi",ru:'Луна пришла в гости',en:'The Moon comes to visit'},b:{
+uz:({c,m,d})=>`Bir kecha derazadan katta, sariq Oy qaradi.\n— Salom, ${c}! Men hammaga xayrli tun aytgani keldim, — dedi Oy.\nOy ayiqchaga qaradi: "Xayrli tun, ayiqcha." Ayiqcha ko'zini yumdi.\nOy qo'g'irchoqqa qaradi: "Xayrli tun, qo'g'irchoq." Qo'g'irchoq ham uxladi.\nOy mashinachalarga, kubiklarga, kitoblarga xayrli tun dedi. Hammasi jim bo'ldi.\nOy ${d}ga qaradi — ${d} jilmaydi.\nOy ${m}ga qaradi — ${m} ${c}ning boshini silab qo'ydi.\nKeyin Oy sekin pichirladi: "Endi navbat senda, ${c}. Men tun bo'yi derazangdan qarab turaman."\n${c} esnadi… ko'zlarini yumdi… va shirin uxlab qoldi.`,
+ru:({c,m,d})=>`Однажды ночью в окно заглянула большая жёлтая Луна.\n— Привет, ${c}! Я пришла всем сказать «спокойной ночи», — сказала Луна.\nЛуна посмотрела на мишку: «Спокойной ночи, мишка». Мишка закрыл глазки.\nЛуна посмотрела на куклу: «Спокойной ночи, кукла». И кукла уснула.\nЛуна пожелала спокойной ночи машинкам, кубикам, книжкам. Всё стало тихо.\nЛуна посмотрела на папу — папа ${d} улыбнулся.\nЛуна посмотрела на маму — мама ${m} погладила дочку по голове.\nА потом Луна тихо прошептала: «Теперь твоя очередь, ${c}. Я всю ночь буду смотреть в твоё окошко».\n${c} зевнула… закрыла глазки… и сладко уснула.`,
+en:({c,m,d})=>`One night a big yellow Moon looked through the window.\n"Hello, ${c}! I came to say good night to everyone," said the Moon.\nThe Moon looked at the teddy bear: "Good night, teddy." Teddy closed his eyes.\nThe Moon looked at the doll: "Good night, doll." The doll fell asleep too.\nThe Moon said good night to the cars, the blocks, the books. Everything went quiet.\nThe Moon looked at ${d} — and ${d} smiled.\nThe Moon looked at ${m} — and ${m} stroked ${c}'s hair.\nThen the Moon whispered: "Now it's your turn, ${c}. I'll watch your window all night long."\n${c} yawned… closed her eyes… and fell fast asleep.`}},
+{t:{uz:'Yumshoq bulut',ru:'Мягкое облачко',en:'The soft cloud'},b:{
+uz:({c})=>`${c} oppoq, yumshoq bulutga chiqib yotdi.\nBulut paxtadek yumshoq, iliq edi.\nBulut sekin… juda sekin suzdi.\nPastda uylar uxlayapti. Daraxtlar uxlayapti. Qushchalar uyasida uxlayapti.\nKel, birga sanaymiz: bir… ikki… uch…\nto'rt… besh… olti…\nyetti… sakkiz… to'qqiz…\no'n.\nBulut ${c}ni sekin tebratdi, xuddi beshikday.\nAlla… alla… uxla, ${c}.`,
+ru:({c})=>`${c} забралась на белое мягкое облачко и легла.\nОблачко было мягкое, как вата, и тёплое.\nОблачко плыло медленно… очень медленно.\nВнизу спят домики. Спят деревья. Птички спят в гнёздышках.\nДавай посчитаем вместе: один… два… три…\nчетыре… пять… шесть…\nсемь… восемь… девять…\nдесять.\nОблачко тихо качало дочку, как колыбелька.\nБаю-бай… баю-бай… спи, ${c}.`,
+en:({c})=>`${c} climbed onto a white, soft cloud and lay down.\nThe cloud was soft as cotton, and warm.\nThe cloud floated slowly… very slowly.\nDown below, the houses are asleep. The trees are asleep. The birds are asleep in their nests.\nLet's count together: one… two… three…\nfour… five… six…\nseven… eight… nine…\nten.\nThe cloud rocked ${c} gently, like a cradle.\nHush-a-bye… hush-a-bye… sleep, ${c}.`}},
+{t:{uz:'Hayvonlar uxlaydi',ru:'Зверята засыпают',en:'The animals go to sleep'},b:{
+uz:({c})=>`Mushukcha yumaloq bo'lib oldi va uxladi. Miyov… xayrli tun.\nQuyoncha qulog'ini yig'di va uxladi. Xayrli tun, quyoncha.\nQo'zichoq onasining yoniga yotdi va uxladi. Ba-a… xayrli tun.\nJo'jachalar tovuqning qanoti ostiga kirdi. Xayrli tun, jo'jalar.\nBaliqchalar suv ostida sekin tebranib uxladi.\nKuchukcha dumini o'radi va uxladi. Xayrli tun, kuchukcha.\nHamma hayvonlar uxladi. Endi faqat bitta qizcha qoldi…\nU ${c}! ${c} ham ko'zlarini yumyapti…\nXayrli tun, ${c}.`,
+ru:({c})=>`Котёнок свернулся клубочком и уснул. Мяу… спокойной ночи.\nЗайчик сложил ушки и уснул. Спокойной ночи, зайчик.\nЯгнёнок лёг рядом с мамой и уснул. Бе-е… спокойной ночи.\nЦыплята спрятались под крылышко курочки. Спокойной ночи, цыплята.\nРыбки тихо покачиваются под водой и спят.\nЩеночек обернул хвостик и уснул. Спокойной ночи, щеночек.\nВсе зверята уснули. Осталась только одна девочка…\nЭто ${c}! И ${c} тоже закрывает глазки…\nСпокойной ночи, ${c}.`,
+en:({c})=>`The kitten curled into a ball and fell asleep. Meow… good night.\nThe bunny folded its ears and fell asleep. Good night, bunny.\nThe little lamb lay down by its mommy and fell asleep. Baa… good night.\nThe chicks tucked under the hen's wing. Good night, chicks.\nThe little fish sway gently under the water, asleep.\nThe puppy curled its tail and fell asleep. Good night, puppy.\nAll the animals are asleep. Only one little girl is left…\nIt's ${c}! And ${c} is closing her eyes too…\nGood night, ${c}.`}}
+];
+const PO=[
+{t:{uz:'Alla, bolam',ru:'Колыбельная для дочки',en:'Lullaby for my girl'},b:{
+uz:({c,m})=>`Alla, ${c}, alla,\nOy chiqdi osmonda.\nYulduzchalar uxladi,\nSen ham uxla, jonim-a.\n\n${m} yoningda o'tirar,\nAlla aytib tebratar.\nShirin tushlar ko'rgin, qizim,\nTong otguncha, alla.`,
+ru:({c,m})=>`Баю-баю, ${c},\nВышла в небо Луна.\nЗвёздочки уснули,\nСпи и ты, родная.\n\nМама ${m} рядом сидит,\nТихо песенку поёт.\nСладких снов, моя доченька,\nДо утра, баю-бай.`,
+en:({c,m})=>`Hush now, ${c}, hush,\nThe Moon is in the sky.\nThe little stars are sleeping,\nSo close your eyes, my sweet.\n\n${m} is sitting near you,\nSinging soft and low.\nSweet dreams, my little daughter,\nUntil the morning glow.`}},
+{t:{uz:'Uch yoshli malika',ru:'Трёхлетняя принцесса',en:'Princess turning three'},b:{
+uz:({c,d})=>`Bir, ikki, uch — ${c} bo'ladi uch yoshda!\nTort, sham va sharlar — hammasi ertaga.\nHozir esa yostiq, ko'rpa va tinchlik,\n${d} va onasi — yoningda yaqinlik.\nKo'zingni yum, malika, tush ko'r shirin,\nErtaga yana o'ynaymiz, endi uxla, qizim.`,
+ru:({c,d})=>`Раз, два, три — ${c} скоро три года!\nТорт, свечи и шарики — всё завтра, всё скоро.\nА сейчас — подушка, одеяло, покой,\nПапа ${d} и мама — рядышком с тобой.\nЗакрой глазки, принцесса, пусть снится чудесное,\nЗавтра снова играем, а сейчас — спать, моя прелесть.`,
+en:({c,d})=>`One, two, three — ${c} will soon be three!\nCake and candles and balloons — tomorrow, wait and see.\nBut now it's pillow, blanket, quiet all around,\n${d} and Mommy near you, safe and sound.\nClose your eyes, princess, dream something sweet,\nTomorrow we will play again — now, sleep.`}}
+];
+
+/* ---------- audio ---------- */
+let ac,master,bufs={};const active={};
+function A(){if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();const comp=ac.createDynamicsCompressor();master=ac.createGain();master.gain.value=vol();master.connect(comp);comp.connect(ac.destination);mkBufs()}if(ac.state==='suspended')ac.resume();return ac}
+function vol(){return ($('#vol').value/100)**1.6}
+function mkBufs(){const n=ac.sampleRate*4;const w=ac.createBuffer(1,n,ac.sampleRate),p=ac.createBuffer(1,n,ac.sampleRate),b=ac.createBuffer(1,n,ac.sampleRate);const W=w.getChannelData(0),P=p.getChannelData(0),B=b.getChannelData(0);let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,last=0;
+for(let i=0;i<n;i++){const x=Math.random()*2-1;W[i]=x;b0=.99886*b0+x*.0555179;b1=.99332*b1+x*.0750759;b2=.969*b2+x*.153852;b3=.8665*b3+x*.3104856;b4=.55*b4+x*.5329522;b5=-.7616*b5-x*.016898;P[i]=(b0+b1+b2+b3+b4+b5+b6+x*.5362)*.11;b6=x*.115926;last=(last+.02*x)/1.02;B[i]=last*3.5}
+bufs={w,p,b}}
+function src(buf){const s=ac.createBufferSource();s.buffer=buf;s.loop=true;s.start();return s}
+function lfo(param,f,depth){const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.value=depth;o.connect(g);g.connect(param);o.start();return o}
+function out(level){const g=ac.createGain();g.gain.value=0;g.gain.setTargetAtTime(level,ac.currentTime,.8);g.connect(master);return g}
+function filt(type,f,q){const x=ac.createBiquadFilter();x.type=type;x.frequency.value=f;if(q)x.Q.value=q;return x}
+function thump(t,f,v,g){const o=ac.createOscillator(),e=ac.createGain();o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.6,t+.15);e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(v,t+.015);e.gain.exponentialRampToValueAtTime(.001,t+.22);o.connect(e);e.connect(g);o.start(t);o.stop(t+.3)}
+const NF={C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,A4:440,B4:493.88,C5:523.25,D5:587.33,E5:659.25};
+const MEL={
+brahms:'E4 .5 E4 .5 G4 2 E4 .5 E4 .5 G4 2 E4 .5 G4 .5 C5 1 B4 1.5 A4 .5 A4 1 G4 1 D4 .5 E4 .5 F4 1 D4 1 D4 .5 E4 .5 F4 2 D4 .5 F4 .5 B4 .5 A4 .5 G4 1 B4 1 C5 2 C4 .5 C4 .5 C5 2 A4 .5 F4 .5 G4 2 E4 .5 C4 .5 F4 1 G4 1 A4 1 G4 2 C4 .5 C4 .5 C5 2 A4 .5 F4 .5 G4 2 E4 .5 C4 .5 F4 1 E4 .5 D4 .5 C4 3',
+twinkle:'C4 1 C4 1 G4 1 G4 1 A4 1 A4 1 G4 2 F4 1 F4 1 E4 1 E4 1 D4 1 D4 1 C4 2 G4 1 G4 1 F4 1 F4 1 E4 1 E4 1 D4 2 G4 1 G4 1 F4 1 F4 1 E4 1 E4 1 D4 2 C4 1 C4 1 G4 1 G4 1 A4 1 A4 1 G4 2 F4 1 F4 1 E4 1 E4 1 D4 1 D4 1 C4 3'};
+function bell(t,f,g,v=.22){[[1,'sine',v],[2,'sine',v*.25],[3,'triangle',v*.06]].forEach(([m,ty,a])=>{const o=ac.createOscillator(),e=ac.createGain();o.type=ty;o.frequency.value=f*m;e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(a,t+.01);e.gain.exponentialRampToValueAtTime(.0008,t+2.2/m);o.connect(e);e.connect(g);o.start(t);o.stop(t+2.4)})}
+function musicbox(key){const g=out(1),lp=filt('lowpass',2400);lp.connect(g);const seq=MEL[key].split(' ');const notes=[];for(let i=0;i<seq.length;i+=2)notes.push([NF[seq[i]],+seq[i+1]]);const beat=key==='brahms'?.62:.72;let i=0,t=ac.currentTime+.2;
+const tick=()=>{while(t<ac.currentTime+1.5){const [f,d]=notes[i];bell(t,f,lp);t+=d*beat;i++;if(i>=notes.length){i=0;t+=2.5}}};tick();const id=setInterval(tick,400);return{g,stop:()=>clearInterval(id)}}
+const SOUNDS={
+rain(){const g=out(.55),s=src(bufs.p),h=filt('highpass',500),l=filt('lowpass',7000);s.connect(h);h.connect(l);l.connect(g);return{g,n:[s]}},
+ocean(){const g=out(.0001),s=src(bufs.b),l=filt('lowpass',900);s.connect(l);l.connect(g);g.gain.cancelScheduledValues(0);g.gain.value=.55;const o=lfo(g.gain,.09,.45);return{g,n:[s,o]}},
+heart(){const g=out(1),l=filt('lowpass',160);l.connect(g);let t=ac.currentTime+.2;const tick=()=>{while(t<ac.currentTime+1.2){thump(t,58,.9,l);thump(t+.3,52,.55,l);t+=1.0}};tick();const id=setInterval(tick,300);return{g,stop:()=>clearInterval(id)}},
+shh(){const g=out(.0001),s=src(bufs.w),b=filt('bandpass',2600,.6);s.connect(b);b.connect(g);g.gain.cancelScheduledValues(0);g.gain.value=.22;const o=lfo(g.gain,.45,.2);return{g,n:[s,o]}},
+white(){const g=out(.18),s=src(bufs.w),l=filt('lowpass',6000);s.connect(l);l.connect(g);return{g,n:[s]}},
+brown(){const g=out(.7),s=src(bufs.b),l=filt('lowpass',520);s.connect(l);l.connect(g);return{g,n:[s]}},
+brahms(){return musicbox('brahms')},twinkle(){return musicbox('twinkle')}};
+const ICO={rain:'<path d="M7 15a5 5 0 1 1 1-9.9A6 6 0 0 1 19 9a4 4 0 0 1-1 7.9M8 19l-1 2M12 18l-1 3M16 19l-1 2"/>',ocean:'<path d="M2 15c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M7 9c1-3 4-5 8-4"/>',heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',shh:'<path d="M9 4v10a3 3 0 0 0 6 0V4M5 11h3M16 11h3M12 17v4"/>',white:'<path d="M3 12h1M6 8v8M9 5v14M12 9v6M15 6v12M18 10v4M21 12h0"/>',brown:'<path d="M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h8"/>',brahms:'<path d="M9 18V6l10-2v12"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="16" r="2"/>',twinkle:'<path d="M12 3l2.5 6 6.5.5-5 4.2 1.6 6.3L12 16.6 6.4 20l1.6-6.3-5-4.2 6.5-.5z"/>'};
+function toggle(k,on){A();if(on===undefined)on=!active[k];if(on&&!active[k]){active[k]=SOUNDS[k]()}else if(!on&&active[k]){const x=active[k];delete active[k];x.g.gain.cancelScheduledValues(ac.currentTime);x.g.gain.setTargetAtTime(0,ac.currentTime,.4);setTimeout(()=>{x.stop&&x.stop();(x.n||[]).forEach(n=>{try{n.stop()}catch(e){}});x.g.disconnect()},2500)}renderSnd();keepAwake()}
+function stopAll(){Object.keys(active).forEach(k=>toggle(k,false))}
+function renderSnd(){$('#snds').innerHTML=Object.keys(SOUNDS).map(k=>`<button class="tile${active[k]?' on':''}" data-s="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg><span>${T[L].s[k]}</span></button>`).join('')}
+$('#snds').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(b)toggle(b.dataset.s)});
+$('#vol').addEventListener('input',()=>{if(master)master.gain.setTargetAtTime(vol(),ac.currentTime,.1)});
+
+/* ---------- timer ---------- */
+let tEnd=0,tId=null,tSel=store.get('timer',30);
+function renderTimers(){$('#timers').innerHTML=[0,15,30,45,60,90].map(m=>`<button class="chip${tSel===m?' on':''}" data-m="${m}">${m?m+' '+T[L].min:T[L].off}</button>`).join('')}
+$('#timers').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;tSel=+b.dataset.m;store.set('timer',tSel);renderTimers();startTimer()});
+function startTimer(){tEnd=tSel?Date.now()+tSel*60000:0;if(master)master.gain.setTargetAtTime(vol(),ac.currentTime,.2);$('#nlc').style.opacity=1}
+setInterval(()=>{if(!tEnd){$('#tmr').textContent='';return}const left=tEnd-Date.now();if(left<=0){tEnd=0;fadeEnd();return}$('#tmr').textContent=Math.ceil(left/60000)+' '+T[L].min;if(left<60000&&master)master.gain.setTargetAtTime(0,ac.currentTime,12)},1000);
+function fadeEnd(){if(master)master.gain.setTargetAtTime(0,ac.currentTime,6);$('#nlc').style.opacity=.05;setTimeout(()=>{stopAll();if(master)master.gain.value=vol()},40000)}
+
+/* ---------- wake lock ---------- */
+let wl=null;async function keepAwake(){try{if('wakeLock' in navigator&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>wl=null)}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(Object.keys(active).length||$('#nl').classList.contains('on')))keepAwake()});
+
+/* ---------- night light ---------- */
+const COLS=[['#ff3b1f','#5a0a00'],['#ff8a2b','#4a1c00'],['#ffc56b','#3d2a08'],['#7a6cff','#120d3a'],['#111','#000']];let ci=store.get('col',0);
+function paintNL(){const [a,b]=COLS[ci],v=$('#bri').value/100;$('#nlc').style.background=`radial-gradient(circle at 50% 42%,${a} 0%,${b} 60%,#000 100%)`;$('#nlc').style.filter=`brightness(${.15+v*.85})`;$('#sws').innerHTML=COLS.map((c,i)=>`<button class="sw${i===ci?' on':''}" data-c="${i}" style="background:${c[0]}"></button>`).join('')}
+$('#sws').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(b){ci=+b.dataset.c;store.set('col',ci);paintNL()}});
+$('#bri').addEventListener('input',paintNL);
+let uiT;function showUI(){$('#nlui').classList.remove('hide');clearTimeout(uiT);uiT=setTimeout(()=>$('#nlui').classList.add('hide'),5000)}
+function openNL(){$('#nl').classList.add('on');paintNL();showUI();keepAwake()}
+$('#nl').addEventListener('click',e=>{if(!e.target.closest('#nlui'))showUI()});
+$('#nlopen').onclick=openNL;
+$('#nlx').onclick=()=>$('#nl').classList.remove('on');
+$('#stopall').onclick=()=>{stopAll();tEnd=0};
+
+$('#go').onclick=()=>{A();['brown','brahms'].forEach(k=>toggle(k,true));tSel=30;renderTimers();startTimer();ci=0;openNL()};
+
+/* ---------- child lock ---------- */
+function fs(on){try{if(on){const el=document.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen).call(el).catch?.(()=>{})}else if(document.fullscreenElement){document.exitFullscreen().catch(()=>{})}}catch(e){}}
+function lock(){if(!$('#nl').classList.contains('on'))openNL();document.body.classList.add('locked');fs(true);keepAwake();try{history.pushState({l:1},'',location.href)}catch(e){}}
+function unlock(){document.body.classList.remove('locked');fs(false);showUI()}
+window.addEventListener('popstate',()=>{if(document.body.classList.contains('locked')){try{history.pushState({l:1},'',location.href)}catch(e){}}});
+$('#lockbtn').onclick=lock;$('#nllock').onclick=lock;
+document.addEventListener('contextmenu',e=>{if(document.body.classList.contains('locked'))e.preventDefault()});
+$('#guard').addEventListener('pointerdown',e=>{const d=document.createElement('div');d.className='glow';d.style.left=e.clientX+'px';d.style.top=e.clientY+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1700)});
+let hT,hS;const ring=$('#ring');
+function hold(e){e.preventDefault();hS=performance.now();const step=()=>{const p=Math.min(1,(performance.now()-hS)/3000);ring.style.strokeDashoffset=144.5*(1-p);if(p>=1){release();ask();return}hT=requestAnimationFrame(step)};hT=requestAnimationFrame(step)}
+function release(){cancelAnimationFrame(hT);ring.style.strokeDashoffset=144.5}
+const lh=$('#lockhold');lh.addEventListener('pointerdown',hold);['pointerup','pointerleave','pointercancel'].forEach(ev=>lh.addEventListener(ev,release));
+function ask(){const a=6+Math.floor(Math.random()*7),b=5+Math.floor(Math.random()*8),r=a+b;const o=[r,r+1+Math.floor(Math.random()*3),r-1-Math.floor(Math.random()*3)].sort(()=>Math.random()-.5);$('#pqq').textContent=`${a} + ${b} = ?`;$('#pqo').innerHTML=o.map(x=>`<button class="btn g" data-v="${x}">${x}</button>`).join('');$('#pq').dataset.r=r;$('#pq').classList.add('on')}
+$('#pqo').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;$('#pq').classList.remove('on');if(+b.dataset.v===+$('#pq').dataset.r)unlock()});
+$('#pqx').onclick=()=>$('#pq').classList.remove('on');
+
+/* ---------- stories + TTS ---------- */
+let speaking=null;
+function voiceFor(l){const vs=speechSynthesis.getVoices();return vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith(l))}
+function speak(text,btn){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();if(speaking===btn){speaking=null;btn.textContent=T[L].read;return}
+const v=voiceFor(L);if(!v&&L==='uz'){btn.nextElementSibling.textContent=T[L].noVoice;return}
+document.querySelectorAll('.rd').forEach(b=>b.textContent=T[L].read);speaking=btn;btn.textContent=T[L].stopR;
+const parts=text.split(/\n+/).filter(Boolean);parts.forEach((p,i)=>{const u=new SpeechSynthesisUtterance(p.replace(/…/g,', '));if(v)u.voice=v;u.lang=v?v.lang:L;u.rate=.78;u.pitch=.95;u.volume=1;if(i===parts.length-1)u.onend=()=>{if(speaking===btn){speaking=null;btn.textContent=T[L].read}};speechSynthesis.speak(u)})}
+try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
+function storyHTML(arr,pre){return arr.map((s,i)=>{const txt=s.b[L](nm());return `<div class="acc"><button><span class="dot" style="background:${pre==='s'?'#8fa2ff':'#ff9d4d'}"></span><span>${s.t[L]}</span><i>›</i></button><div class="bd"><div class="row" style="margin-top:0"><button class="btn rd" data-x="${pre}${i}">${T[L].read}</button><span class="note"></span></div><div class="story">${txt.split('\n').map(l=>l?`<p>${l}</p>`:'<br>').join('')}</div></div></div>`}).join('')}
+document.addEventListener('click',e=>{const r=e.target.closest('.rd');if(r){const k=r.dataset.x,arr=k[0]==='s'?ST:PO;speak(arr[+k.slice(1)].b[L](nm()),r);return}
+const h=e.target.closest('.acc>button');if(h){const a=h.parentElement,was=a.classList.contains('open');a.parentElement.querySelectorAll(':scope>.acc.open').forEach(x=>{if(x!==a&&!x.querySelector('#nc'))x.classList.remove('open')});a.classList.toggle('open',!was)}});
+
+/* ---------- game ---------- */
+let sleepCount=0;const PENTA=[523.25,587.33,659.25,783.99,880,1046.5];
+function newGame(){const sky=$('#sky');sky.querySelectorAll('.st').forEach(s=>s.remove());sleepCount=0;$('#gmsg').textContent='';$('#sky').style.filter='';
+const pts=[];let tries=0;while(pts.length<9&&tries<400){tries++;const x=10+Math.random()*80,y=20+Math.random()*62;if(pts.every(p=>Math.hypot(p[0]-x,(p[1]-y)*1.4)>16))pts.push([x,y])}
+pts.forEach(([x,y],i)=>{const d=document.createElement('button');d.className='st';d.style.left=x+'%';d.style.top=y+'%';d.innerHTML='<svg viewBox="0 0 24 24" fill="#ffe9a8"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>';d.querySelector('svg').style.animationDelay=(i*.3)+'s';sky.appendChild(d)})}
+$('#sky').addEventListener('click',e=>{const s=e.target.closest('.st');if(!s||s.classList.contains('sl'))return;s.classList.add('sl');A();const g=ac.createGain();g.gain.value=.5;g.connect(master);bell(ac.currentTime,PENTA[sleepCount%PENTA.length]/2,g,.3);sleepCount++;
+if(sleepCount>=$$('.st').length){setTimeout(()=>{$('#gmsg').textContent=T[L].allSleep(nm().c);$('#sky').style.filter='brightness(.6)';const g2=ac.createGain();g2.gain.value=.5;g2.connect(master);[523.25,392,329.63,261.63].forEach((f,i)=>bell(ac.currentTime+i*.9,f,g2,.25))},900)}});
+$('#gre').onclick=newGame;
+
+/* ---------- names ---------- */
+$('#save').onclick=()=>{N={c:$('#nc').value.trim(),m:$('#nm').value.trim(),d:$('#nd').value.trim()};store.set('names',N);$('#saved').textContent=T[L].saved;setTimeout(()=>$('#saved').textContent='',2000);render()};
+
+/* ---------- tabs + lang ---------- */
+$('#nav').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;$$('#nav button').forEach(x=>x.classList.toggle('on',x===b));$$('.tab').forEach(t=>t.classList.toggle('on',t.id==='t-'+b.dataset.t));if(b.dataset.t==='game'&&!$$('.st').length)newGame();window.scrollTo(0,0);store.set('tab',b.dataset.t)});
+$('#langs').addEventListener('click',e=>{const b=e.target.closest('[data-l]');if(!b)return;L=b.dataset.l;store.set('lang',L);try{speechSynthesis.cancel()}catch(x){}speaking=null;render()});
+function render(){document.documentElement.lang=L;$$('#langs button').forEach(b=>b.classList.toggle('on',b.dataset.l===L));
+$$('[data-i]').forEach(el=>{const v=T[L][el.dataset.i];if(typeof v==='string')el.textContent=v});
+$$('[data-h]').forEach(el=>el.innerHTML=H[L][el.dataset.h]);
+const n=nm();$('#greet').textContent=T[L].greet(n.c);$('#hname').textContent=N.c?'· '+N.c:'';
+$('#stl').innerHTML=storyHTML(ST,'s');$('#pol').innerHTML=storyHTML(PO,'p');
+$('#tips').innerHTML=TIPS[L].map(([t,b])=>`<div class="acc"><button><span class="dot" style="background:#7ee0b5"></span><span>${t}</span><i>›</i></button><div class="bd">${b}</div></div>`).join('');
+$('#nc').value=N.c;$('#nm').value=N.m;$('#nd').value=N.d;renderSnd();renderTimers();
+if($('#gmsg').textContent)$('#gmsg').textContent=T[L].allSleep(n.c)}
+render();
+const t0=store.get('tab','home');if(t0!=='home'){const b=$(`#nav [data-t="${t0}"]`);b&&b.click()}
+if(!N.c){const pb=$('#nav [data-t="par"]');}
+}
+</script>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+</body>
+</html>
