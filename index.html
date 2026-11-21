@@ -7,7 +7,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>Alla — uyqu</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="manifest" href="manifest.webmanifest">
+<script>/* Android < 9 cannot run the app package Google now builds (dex 039 -> "Unrecognized version number", crash on launch).
+   There we skip the manifest: Chrome then offers a plain, crash-proof "Add to Home screen" shortcut. */
+(function(){function add(){var l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l)}
+var ua=navigator.userAgent,d=navigator.userAgentData;
+if(!/Android/i.test(ua)){add();return}
+if(d&&d.getHighEntropyValues){d.getHighEntropyValues(['platformVersion']).then(function(v){if(parseInt(v.platformVersion||'0',10)>=9)add();else window.OLD_ANDROID=1}).catch(function(){window.OLD_ANDROID=1})}else{window.OLD_ANDROID=1}})();</script>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 /* VOICE: tender, hushed, one hand at night
@@ -118,6 +123,7 @@ body.locked #guard{display:block}
     <p class="hint" data-i="goHint"></p>
     <div class="row" style="justify-content:center;margin:6px 0"><button class="btn" id="inst" hidden>📲 <span data-i="inst"></span></button></div>
     <p class="hint" id="iosh" data-i="ios" hidden></p>
+    <p class="hint" id="andh" data-i="and" hidden></p>
     <div class="acc" id="now"><button><span class="dot" style="background:var(--amber)"></span><span data-i="nowT"></span><i>›</i></button><div class="bd" data-h="nowB"></div></div>
   </section>
 
@@ -184,21 +190,21 @@ let L=store.get('lang',autoL());
 let N=store.get('names',{c:'',m:'',d:''});
 
 const T={
-uz:{inst:"Ilovani o'rnatish",ios:"iPhone: «Ulashish» → «Bosh ekranga» bosing",tHome:'Uyqu',tSnd:'Ovozlar',tStr:'Ertaklar',tGame:"O'yin",tPar:'Ota-ona',go:'Uxlatish',goSub:'bir bosish',goHint:"Qizil tungi chiroq + mayin shovqin + alla. 30 daqiqadan keyin o'zi sekin o'chadi.",
+uz:{and:"Android: ⋮ → «Bosh ekranga qo'shish»",inst:"Ilovani o'rnatish",ios:"iPhone: «Ulashish» → «Bosh ekranga» bosing",tHome:'Uyqu',tSnd:'Ovozlar',tStr:'Ertaklar',tGame:"O'yin",tPar:'Ota-ona',go:'Uxlatish',goSub:'bir bosish',goHint:"Qizil tungi chiroq + mayin shovqin + alla. 30 daqiqadan keyin o'zi sekin o'chadi.",
 nowT:'Hozir uxlamayapti? 5 qadam',greet:n=>`Xayrli tun, ${n}`,timer:"Taymer (o'zi o'chadi)",off:"O'chiq",min:'daq',openNL:'Tungi chiroq',stop:"Hammasini o'chirish",stories:'Ertaklar',poems:"Allalar va she'rlar",read:"O'qib berish",stopR:"To'xtatish",
 ttsNote:"Eng yaxshisi — onaning ovozi. Telefonda o'zbek ovozi bo'lmasa, matnni ona o'qib bersin.",gameHint:"Har bir yulduzchaga tegib, uni uxlat. Hammasi uxlasa — Oy xayrli tun deydi.",again:'Yana',
 names:'Ismlar',nChild:'Qizimizning ismi',nMom:'Onasining ismi',nDad:'Dadasining ismi',save:'Saqlash',saved:'Saqlandi ✓',breath:'Nafas ol… sekin chiqar…',lockNow:'Bolalar qulfi',close:'Yopish',
 pqT:"Qulfni ochish (kattalar uchun):",cancel:'Bekor',allSleep:n=>`Hamma yulduzlar uxladi. Endi navbat ${n}da. Xayrli tun!`,noVoice:"Bu telefonda o'zbek ovozi yo'q — onasi o'qib bersin.",
 dc:'qizim',dm:'oyisi',dd:'dadasi',
 s:{rain:"Yomg'ir",ocean:'Dengiz',heart:'Yurak urishi',shh:'Shshsh',white:'Oq shovqin',brown:'Shamol / fen',brahms:'Alla (Brams)',twinkle:'Yulduzcha'}},
-ru:{inst:"Установить приложение",ios:"iPhone: «Поделиться» → «На экран Домой»",tHome:'Сон',tSnd:'Звуки',tStr:'Сказки',tGame:'Игра',tPar:'Родителям',go:'Уложить',goSub:'одно нажатие',goHint:'Красный ночник + мягкий шум + колыбельная. Через 30 минут всё плавно выключится само.',
+ru:{and:"Android: ⋮ → «Добавить на главный экран»",inst:"Установить приложение",ios:"iPhone: «Поделиться» → «На экран Домой»",tHome:'Сон',tSnd:'Звуки',tStr:'Сказки',tGame:'Игра',tPar:'Родителям',go:'Уложить',goSub:'одно нажатие',goHint:'Красный ночник + мягкий шум + колыбельная. Через 30 минут всё плавно выключится само.',
 nowT:'Не спит прямо сейчас? 5 шагов',greet:n=>`Спокойной ночи, ${n}`,timer:'Таймер (выключится сам)',off:'Выкл',min:'мин',openNL:'Ночник',stop:'Выключить всё',stories:'Сказки',poems:'Колыбельные и стихи',read:'Прочитать вслух',stopR:'Стоп',
 ttsNote:'Лучше всего — мамин голос. Если голос робота звучит плохо, пусть мама читает текст сама.',gameHint:'Коснись каждой звёздочки — она засыпает. Когда уснут все, Луна скажет «спокойной ночи».',again:'Ещё раз',
 names:'Имена',nChild:'Имя дочки',nMom:'Имя мамы',nDad:'Имя папы',save:'Сохранить',saved:'Сохранено ✓',breath:'Вдох… медленный выдох…',lockNow:'Детский замок',close:'Закрыть',
 pqT:'Снять замок (для взрослых):',cancel:'Отмена',allSleep:n=>`Все звёздочки уснули. Теперь очередь ${n}. Спокойной ночи!`,noVoice:'На этом телефоне нет узбекского голоса — пусть прочитает мама.',
 dc:'доченька',dm:'мама',dd:'папа',
 s:{rain:'Дождь',ocean:'Море',heart:'Сердцебиение',shh:'Шшш',white:'Белый шум',brown:'Ветер / фен',brahms:'Колыбельная Брамса',twinkle:'Звёздочка'}},
-en:{inst:"Install app",ios:"iPhone: tap Share → Add to Home Screen",tHome:'Sleep',tSnd:'Sounds',tStr:'Stories',tGame:'Game',tPar:'Parents',go:'Sleep now',goSub:'one tap',goHint:'Red night light + soft noise + lullaby. Fades out by itself after 30 minutes.',
+en:{and:"Android: ⋮ → Add to Home screen",inst:"Install app",ios:"iPhone: tap Share → Add to Home Screen",tHome:'Sleep',tSnd:'Sounds',tStr:'Stories',tGame:'Game',tPar:'Parents',go:'Sleep now',goSub:'one tap',goHint:'Red night light + soft noise + lullaby. Fades out by itself after 30 minutes.',
 nowT:'Not sleeping right now? 5 steps',greet:n=>`Good night, ${n}`,timer:'Sleep timer',off:'Off',min:'min',openNL:'Night light',stop:'Stop all',stories:'Stories',poems:'Lullabies & poems',read:'Read aloud',stopR:'Stop',
 ttsNote:"Mom's own voice works best. If the robot voice sounds wrong, read the text yourself.",gameHint:'Touch each star to put it to sleep. When all are asleep, the Moon says good night.',again:'Again',
 names:'Names',nChild:"Daughter's name",nMom:"Mom's name",nDad:"Dad's name",save:'Save',saved:'Saved ✓',breath:'Breathe in… slowly out…',lockNow:'Child lock',close:'Close',
@@ -365,6 +371,7 @@ window.addEventListener('beforeinstallprompt',e=>{bip=e;if(!standalone())$('#ins
 window.addEventListener('appinstalled',()=>{$('#inst').hidden=true});
 $('#inst').onclick=()=>{if(!bip)return;try{bip.prompt();bip.userChoice.then(()=>{bip=null;$('#inst').hidden=true})}catch(e){}};
 if(/iPhone|iPad|iPod/.test(navigator.userAgent)&&!standalone())$('#iosh').hidden=false;
+setTimeout(()=>{if(window.OLD_ANDROID)$('#andh').hidden=false},600);
 /* ---------- names ---------- */
 $('#save').onclick=()=>{N={c:$('#nc').value.trim(),m:$('#nm').value.trim(),d:$('#nd').value.trim()};store.set('names',N);$('#saved').textContent=T[L].saved;setTimeout(()=>$('#saved').textContent='',2000);render()};
 
