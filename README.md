@@ -4,6 +4,6 @@ Bir sahifali PWA: qizil tungi chiroq, oq shovqin, allalar, ismli ertaklar, bolal
 Internetsiz ham ishlaydi (birinchi ochilishdan keyin). Android: Chrome → ⋮ → "Bosh ekranga qo'shish".
 
 ## Domen ulash
-1. `CNAME` fayliga domeningizni yozing (masalan `alla.example.uz`).
+1. Domen: **ne-day.uz** (`CNAME` faylida).
 2. DNS: subdomen uchun `CNAME → <github-login>.github.io`; asosiy domen uchun 4 ta `A` yozuv: 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153.
 3. GitHub → Settings → Pages → Custom domain → Enforce HTTPS.
