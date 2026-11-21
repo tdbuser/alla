@@ -174,7 +174,8 @@ body.locked #guard{display:block}
 {
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const store={get(k,d){try{const v=localStorage.getItem('alla_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('alla_'+k,JSON.stringify(v))}catch(e){}}};
-let L=store.get('lang','uz');
+const autoL=()=>{try{for(const x of (navigator.languages||[navigator.language])){const l=(x||'').toLowerCase();if(l.startsWith('uz')||l.endsWith('-uz'))return 'uz';if(l.startsWith('ru')||/^(kk|ky|tg|be|uk)/.test(l))return 'ru';if(l.startsWith('en'))return 'en'}}catch(e){}return 'en'};
+let L=store.get('lang',autoL());
 let N=store.get('names',{c:'',m:'',d:''});
 
 const T={
